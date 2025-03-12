@@ -1,0 +1,46 @@
+// This is your Prisma schema file
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Profile {
+  id            String     @id @default(uuid())
+  walletAddress String     @unique @map("wallet_address")
+  username      String     @unique
+  displayName   String     @map("display_name")
+  bio          String?
+  minimumTip   Float      @map("minimum_tip") @default(0.1)
+  avatarUrl    String?    @map("avatar_url")
+  bannerUrl    String?    @map("banner_url")
+  socialLinks  Json?      @map("social_links")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  receivedDonations Donation[] @relation("ReceivedDonations")
+  sentDonations     Donation[] @relation("SentDonations")
+
+  @@map("profiles")
+}
+
+model Donation {
+  id          String   @id @default(cuid())
+  amount      Float
+  comment     String?
+  signature   String   @unique
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  
+  recipient   Profile  @relation("ReceivedDonations", fields: [recipientId], references: [id])
+  recipientId String   @map("recipient_id")
+  
+  donor       Profile  @relation("SentDonations", fields: [donorId], references: [id])
+  donorId     String   @map("donor_id")
+
+  @@index([recipientId])
+  @@index([donorId])
+  @@map("donations")
+} 
