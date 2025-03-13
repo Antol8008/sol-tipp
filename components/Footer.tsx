@@ -16,15 +16,14 @@ export function Footer() {
             </p>
             <div className="flex items-center gap-4 pt-2">
               <a
-                href="https://twitter.com/soltipp"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-600 hover:text-[#00E64D] transition-colors"
+                href="#"
+                className="text-gray-400 cursor-not-allowed"
+                title="Coming Soon"
               >
                 <Twitter className="h-5 w-5" />
               </a>
               <a
-                href="https://github.com/soltipp"
+                href="https://github.com/Antol8008/sol-tipp"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-600 hover:text-[#00E64D] transition-colors"

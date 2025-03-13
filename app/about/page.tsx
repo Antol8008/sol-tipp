@@ -52,32 +52,37 @@ export default function AboutPage() {
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="relative w-32 h-32">
               <div className="w-full h-full rounded-full overflow-hidden bg-gradient-to-br from-[#00E64D] to-[#00CC44] flex items-center justify-center">
-                <span className="text-4xl font-bold text-white">A</span>
+                <img 
+                  src="image.png"
+                  alt="Antol8008's avatar"
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
             <div className="flex-1 text-center md:text-left">
-              <h3 className="text-2xl font-bold font-heading mb-2">Anon Dev</h3>
+              <h3 className="text-2xl font-bold font-heading mb-2">Antol8008</h3>
               <p className="text-gray-600 font-jakarta mb-4">
-                Full-stack developer passionate about Web3 and creating tools that empower creators.
-                Previously built various developer tools and Web3 projects.
+                Full-Stack Developer and Blockchain Enthusiast specializing in Web2 + Web3 technologies. 
+                Passionate about DeFi, NFTs, and building secure, scalable blockchain solutions. 
+                Currently expanding skills in Python, React.js, and Solidity.
               </p>
               <div className="flex items-center justify-center md:justify-start gap-4">
                 <Link
-                  href="https://github.com/soltipp"
+                  href="https://github.com/Antol8008"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-600 hover:text-[#00E64D] transition-colors"
                 >
                   <Github className="h-6 w-6" />
                 </Link>
-                <Link
+                {/* <Link
                   href="https://twitter.com/soltipp"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-600 hover:text-[#00E64D] transition-colors"
                 >
                   <Twitter className="h-6 w-6" />
-                </Link>
+                </Link> */}
               </div>
             </div>
           </div>

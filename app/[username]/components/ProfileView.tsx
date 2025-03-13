@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Button } from '@/components/ui/button';
-import { Twitter, Github, Globe, Loader2, ExternalLink, Star, Pencil } from 'lucide-react';
+import { Twitter, Github, Globe, Loader2, ExternalLink, Star, Pencil, Gift } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import type { Profile } from '@prisma/client';
 import {
@@ -19,6 +19,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Connection, PublicKey } from '@solana/web3.js';
 import { createTipTransaction } from '@/lib/solana';
+import Image from 'next/image';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface SocialLinks {
   twitter?: string | null;
@@ -310,6 +312,22 @@ const EditProfileDialog = ({ profile, onSave }: EditProfileDialogProps) => {
   );
 };
 
+// Add these new animations at the top level
+const fadeInUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -20 },
+  transition: { duration: 0.3 }
+};
+
+const staggerChildren = {
+  animate: {
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
 export default function ProfileView({ username }: ProfileViewProps) {
   const [profile, setProfile] = useState<ProfileWithParsedJson | null>(null);
   const [loading, setLoading] = useState(true);
@@ -359,6 +377,7 @@ export default function ProfileView({ username }: ProfileViewProps) {
     try {
       const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_RPC_URL!);
       
+
       // Create single transaction for both platform fee and tip
       const transaction = await createTipTransaction(
         connection,
@@ -454,91 +473,132 @@ export default function ProfileView({ username }: ProfileViewProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] pt-16">
-      {/* Banner */}
+    <div className="min-h-screen bg-gradient-to-b from-[#FAFAFA] to-white pt-16">
+      {/* Banner with parallax effect */}
       <div 
-        className="h-48 md:h-64 bg-gradient-to-r from-[#00E64D]/10 to-[#00CC44]/10"
-        style={profile.bannerUrl ? { 
+        className="h-64 md:h-80 bg-gradient-to-r from-[#00E64D]/10 to-[#00CC44]/10 relative overflow-hidden"
+        style={profile.bannerUrl ? {
           backgroundImage: `url(${profile.bannerUrl})`,
           backgroundSize: 'cover',
-          backgroundPosition: 'center'
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed'
         } : undefined}
-      />
+      >
+        <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
+      </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Profile Info */}
-        <div className="relative -mt-20 mb-8">
-          <div className="bg-white rounded-3xl p-8 shadow-lg">
-            <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-              {/* Avatar */}
-              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg bg-gray-100">
+      <motion.div 
+        className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8"
+        initial="initial"
+        animate="animate"
+        variants={staggerChildren}
+      >
+        {/* Profile Info Card */}
+        <motion.div 
+          className="relative -mt-32 mb-8"
+          variants={fadeInUp}
+        >
+          <div className="bg-white rounded-3xl p-8 shadow-xl backdrop-blur-lg bg-white/90 border border-gray-100">
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
+              {/* Avatar with hover effect */}
+              <motion.div 
+                className="w-40 h-40 rounded-2xl overflow-hidden border-4 border-white shadow-2xl transform hover:scale-105 transition-transform duration-300"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
                 {profile.avatarUrl ? (
-                  <img 
+                  <Image
+                    width={160}
+                    height={160}
                     src={profile.avatarUrl} 
                     alt={profile.displayName} 
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full bg-[#00E64D]/10 flex items-center justify-center text-[#00E64D] text-2xl font-heading">
+                  <div className="w-full h-full bg-gradient-to-br from-[#00E64D]/20 to-[#00CC44]/20 flex items-center justify-center text-[#00E64D] text-4xl font-heading">
                     {profile.displayName[0]}
                   </div>
                 )}
-              </div>
+              </motion.div>
 
-              <div className="flex-1 text-center md:text-left">
-                <h1 className="text-3xl font-bold font-heading mb-2">{profile.displayName}</h1>
-                <p className="text-gray-500 font-jakarta mb-2">@{profile.username}</p>
-                <a
+              <div className="flex-1 text-center md:text-left space-y-4">
+                <motion.div variants={fadeInUp}>
+                  <h1 className="text-4xl font-bold font-heading mb-2 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                    {profile.displayName}
+                  </h1>
+                  <p className="text-gray-500 font-jakarta text-lg mb-2">@{profile.username}</p>
+                </motion.div>
+
+                <motion.a
+                  variants={fadeInUp}
                   href={`https://solscan.io/account/${profile.walletAddress}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center text-sm text-gray-500 hover:text-[#00E64D] mb-4 font-jakarta"
+                  className="inline-flex items-center text-sm bg-gray-50 px-4 py-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
                 >
                   {`${profile.walletAddress.slice(0, 4)}...${profile.walletAddress.slice(-4)}`}
-                  <ExternalLink className="h-4 w-4 ml-1" />
-                </a>
+                  <ExternalLink className="h-4 w-4 ml-2 text-gray-500" />
+                </motion.a>
+
                 {profile.bio && (
-                  <p className="text-gray-700 mb-6 max-w-2xl font-jakarta">{profile.bio}</p>
+                  <motion.p 
+                    variants={fadeInUp}
+                    className="text-gray-700 text-lg leading-relaxed max-w-2xl font-jakarta"
+                  >
+                    {profile.bio}
+                  </motion.p>
                 )}
 
-                {/* Social Links */}
+                {/* Social Links with hover effects */}
                 {profile.socialLinks && (
-                  <div className="flex gap-4 justify-center md:justify-start mb-6">
+                  <motion.div 
+                    variants={fadeInUp}
+                    className="flex gap-6 justify-center md:justify-start my-6"
+                  >
                     {profile.socialLinks.twitter && (
-                      <a 
+                      <motion.a 
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
                         href={profile.socialLinks.twitter}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-gray-600 hover:text-[#00E64D]"
+                        className="text-gray-600 hover:text-[#1DA1F2] transition-colors duration-200"
                       >
-                        <Twitter className="h-5 w-5" />
-                      </a>
+                        <Twitter className="h-6 w-6" />
+                      </motion.a>
                     )}
                     {profile.socialLinks.github && (
-                      <a 
+                      <motion.a 
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
                         href={profile.socialLinks.github}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-gray-600 hover:text-[#00E64D]"
+                        className="text-gray-600 hover:text-[#333] transition-colors duration-200"
                       >
-                        <Github className="h-5 w-5" />
-                      </a>
+                        <Github className="h-6 w-6" />
+                      </motion.a>
                     )}
                     {profile.socialLinks.website && (
-                      <a 
+                      <motion.a 
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
                         href={profile.socialLinks.website}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-gray-600 hover:text-[#00E64D]"
+                        className="text-gray-600 hover:text-[#00E64D] transition-colors duration-200"
                       >
-                        <Globe className="h-5 w-5" />
-                      </a>
+                        <Globe className="h-6 w-6" />
+                      </motion.a>
                     )}
-                  </div>
+                  </motion.div>
                 )}
 
                 {/* Action Buttons */}
-                <div className="flex items-center justify-center md:justify-start gap-4">
+                <motion.div 
+                  variants={fadeInUp}
+                  className="flex items-center justify-center md:justify-start gap-4"
+                >
                   {connected ? (
                     <>
                       {!isOwner && (
@@ -558,62 +618,91 @@ export default function ProfileView({ username }: ProfileViewProps) {
                       )}
                     </>
                   ) : (
-                    <WalletMultiButton className="!bg-[#00E64D] hover:!bg-[#00CC44] !rounded-full" />
+                    <WalletMultiButton className="!bg-[#00E64D] hover:!bg-[#00CC44] !rounded-full !px-8 !py-6 !text-lg !font-medium !shadow-lg hover:!shadow-xl !transition-all !duration-200" />
                   )}
-                </div>
+                </motion.div>
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Activity Feed */}
-        <div className="bg-white rounded-3xl p-8 shadow-lg mb-8">
-          <h2 className="text-2xl font-bold font-heading mb-6">Recent Activity</h2>
-          {donations.length > 0 ? (
-            <div className="space-y-6">
-              {donations.map((donation) => (
-                <div key={donation.id} className="bg-gray-50 rounded-2xl p-6">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-[#00E64D]/10 rounded-full flex items-center justify-center">
-                        <span className="text-lg">🎁</span>
-                      </div>
-                      <div className="font-jakarta">
-                        <div className="font-medium">
-                          {donation.donor.displayName || 
-                           `${donation.donor.walletAddress.slice(0, 4)}...${donation.donor.walletAddress.slice(-4)}`}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          sent {donation.amount} SOL
-                        </div>
-                      </div>
-                    </div>
-                    <time className="text-sm text-gray-500 font-jakarta">
-                      {new Date(donation.createdAt).toLocaleDateString()}
-                    </time>
-                  </div>
-                  {donation.comment && (
-                    <div className="mt-3 text-gray-700 bg-white rounded-xl p-4 font-jakarta">
-                      {donation.comment}
-                    </div>
-                  )}
-                  <a
-                    href={`https://solscan.io/tx/${donation.signature}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-3 inline-flex items-center text-sm text-gray-500 hover:text-[#00E64D] font-jakarta"
+        <motion.div 
+          variants={fadeInUp}
+          className="bg-white rounded-3xl p-8 shadow-xl mb-8 border border-gray-100"
+        >
+          <h2 className="text-2xl font-bold font-heading mb-8 flex items-center gap-3">
+            <Gift className="h-6 w-6 text-[#00E64D]" />
+            Recent Activity
+          </h2>
+          
+          <AnimatePresence>
+            {donations.length > 0 ? (
+              <motion.div 
+                className="space-y-6"
+                variants={staggerChildren}
+              >
+                {donations.map((donation, index) => (
+                  <motion.div
+                    key={donation.id}
+                    variants={fadeInUp}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    className="bg-gradient-to-r from-gray-50 to-white rounded-2xl p-6 border border-gray-100 hover:shadow-lg transition-shadow duration-200"
                   >
-                    View Transaction
-                    <ExternalLink className="h-4 w-4 ml-1" />
-                  </a>
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-[#00E64D]/20 to-[#00CC44]/20 rounded-xl flex items-center justify-center shadow-inner">
+                          <span className="text-xl">🎁</span>
+                        </div>
+                        <div className="font-jakarta">
+                          <div className="font-medium text-lg">
+                            {donation.donor.displayName || 
+                             `${donation.donor.walletAddress.slice(0, 4)}...${donation.donor.walletAddress.slice(-4)}`}
+                          </div>
+                          <div className="text-[#00E64D] font-medium">
+                            sent {donation.amount} SOL
+                          </div>
+                        </div>
+                      </div>
+                      <time className="text-sm text-gray-500 font-jakarta bg-gray-50 px-3 py-1 rounded-full">
+                        {new Date(donation.createdAt).toLocaleDateString()}
+                      </time>
+                    </div>
+                    {donation.comment && (
+                      <div className="mt-4 text-gray-700 bg-gray-50 rounded-xl p-5 font-jakarta leading-relaxed">
+                        &ldquo;{donation.comment}&rdquo;
+                      </div>
+                    )}
+                    <motion.a
+                      whileHover={{ scale: 1.02 }}
+                      href={`https://solscan.io/tx/${donation.signature}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-4 inline-flex items-center text-sm text-gray-500 hover:text-[#00E64D] transition-colors duration-200 bg-white px-4 py-2 rounded-full border border-gray-100 hover:shadow-md"
+                    >
+                      View Transaction
+                      <ExternalLink className="h-4 w-4 ml-2" />
+                    </motion.a>
+                  </motion.div>
+                ))}
+              </motion.div>
+            ) : (
+              <motion.div
+                variants={fadeInUp}
+                className="text-center py-16"
+              >
+                <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Gift className="h-8 w-8 text-gray-400" />
                 </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-600 text-center py-8 font-jakarta">No donations yet</p>
-          )}
-        </div>
-      </div>
+                <p className="text-gray-600 text-lg font-jakarta">No donations yet</p>
+                <p className="text-gray-400 mt-2">Be the first one to send a tip!</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      </motion.div>
     </div>
   );
 } 
