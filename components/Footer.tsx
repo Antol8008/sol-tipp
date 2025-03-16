@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Twitter, Github } from 'lucide-react';
+import { Twitter, Github, Youtube } from 'lucide-react';
 
 export function Footer() {
   return (
@@ -29,6 +29,13 @@ export function Footer() {
                 className="text-gray-600 hover:text-[#00E64D] transition-colors"
               >
                 <Github className="h-5 w-5" />
+              </a>
+              <a
+                href="https://www.youtube.com/@Soltipp"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Youtube className="h-5 w-5" />
               </a>
             </div>
           </div>

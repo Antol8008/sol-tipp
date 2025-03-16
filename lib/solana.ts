@@ -1,7 +1,7 @@
 import { PublicKey, Transaction, Connection, LAMPORTS_PER_SOL, SystemProgram } from '@solana/web3.js';
 
 export const PLATFORM_FEE_PERCENT = 3;
-export const PLATFORM_FEE_FIXED = 0.001; // Fixed platform fee in SOL
+export const PLATFORM_FEE_FIXED = 0.01; 
 export const PLATFORM_FEE_ACCOUNT = new PublicKey('7pDCLJpmLRbrxoA25YSPh8eMNFvBiKnLNjMCambmdXvG');
 
 export async function calculatePlatformFee(amount: number): Promise<number> {
