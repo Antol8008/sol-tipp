@@ -1,12 +1,16 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { Button } from '@/components/ui/button';
+import { Gift } from 'lucide-react';
+import { QuickTipDialog } from './QuickTipDialog';
 
 export function Navbar() {
   const { connected } = useWallet();
+  const [quickTipOpen, setQuickTipOpen] = useState(false);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b bg-white/80 backdrop-blur-md">
@@ -20,6 +24,16 @@ export function Navbar() {
           {!connected && (
             <Button className="bg-[#00E64D] hover:bg-[#00CC44] text-black font-medium rounded-full px-6" asChild>
               <Link href="/create">Create Your Page</Link>
+            </Button>
+          )}
+          {connected && (
+            <Button 
+              variant="outline"
+              className="gap-2 rounded-full border-[#00E64D] text-[#00E64D] hover:bg-[#00E64D]/10"
+              onClick={() => setQuickTipOpen(true)}
+            >
+              <Gift className="h-4 w-4" />
+              Quick Tip
             </Button>
           )}
           <div className="wallet-button-wrapper">
@@ -46,6 +60,7 @@ export function Navbar() {
           </div>
         </div>
       </nav>
+      <QuickTipDialog open={quickTipOpen} onOpenChange={setQuickTipOpen} />
     </header>
   );
 }

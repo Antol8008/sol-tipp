@@ -37,25 +37,13 @@ export async function POST(
   { params }: { params: { username: string } }
 ) {
   try {
-    const { amount, comment, signature, walletAddress } = await request.json();
+    const { amount, comment, signature, walletAddress, recipientWallet, isDirectWalletTip } = await request.json();
 
     // Validate input
     if (!amount || !signature || !walletAddress) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
-      );
-    }
-
-    // Get the recipient profile
-    const recipient = await prisma.profile.findUnique({
-      where: { username: params.username },
-    });
-
-    if (!recipient) {
-      return NextResponse.json(
-        { error: 'Profile not found' },
-        { status: 404 }
       );
     }
 
@@ -72,6 +60,37 @@ export async function POST(
           displayName: `Anon ${walletAddress.slice(0, 4)}`,
         },
       });
+    }
+
+    let recipient;
+
+    if (isDirectWalletTip) {
+      // For direct wallet tips, create or get a minimal profile for the recipient
+      recipient = await prisma.profile.findUnique({
+        where: { walletAddress: recipientWallet },
+      });
+
+      if (!recipient) {
+        recipient = await prisma.profile.create({
+          data: {
+            walletAddress: recipientWallet,
+            username: recipientWallet.slice(0, 8),
+            displayName: `Wallet ${recipientWallet.slice(0, 4)}...${recipientWallet.slice(-4)}`,
+          },
+        });
+      }
+    } else {
+      // For registered users, get their profile by username
+      recipient = await prisma.profile.findUnique({
+        where: { username: params.username },
+      });
+
+      if (!recipient) {
+        return NextResponse.json(
+          { error: 'Profile not found' },
+          { status: 404 }
+        );
+      }
     }
 
     // Create the donation

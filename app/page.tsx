@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { prisma } from '@/lib/prisma';
 import { formatDistanceToNow } from 'date-fns';
+import { Navbar } from '@/components/Navbar';
 
 interface DonationUser {
   username: string;
@@ -55,21 +56,7 @@ export default async function Home() {
   
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
-      <header className="fixed top-0 left-0 right-0 z-50 border-b bg-white/80 backdrop-blur-md">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center">
-            <span className="text-2xl font-bold gradient-text">SOLTIPP</span>
-          </div>
-          <div className="flex items-center gap-4">
-            {/* <Button variant="ghost" asChild>
-              <Link href="/login">Login</Link>
-            </Button> */}
-            <Button className="bg-[#00E64D] hover:bg-[#00CC44] text-[#0F1611] rounded-full" asChild>
-              <Link href="/create">Create Your Page</Link>
-            </Button>
-          </div>
-        </nav>
-      </header>
+      <Navbar />
 
       <main className="pt-16">
         {/* Hero Section */}
@@ -181,7 +168,7 @@ export default async function Home() {
                       </div>
                       {donation.comment && (
                         <p className="mt-2 text-sm text-gray-600 line-clamp-2">
-                          "{donation.comment}"
+                          &quot;{donation.comment}&quot;
                         </p>
                       )}
                     </div>
