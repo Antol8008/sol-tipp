@@ -232,7 +232,9 @@ export function QuickTipDialog({ open, onOpenChange }: QuickTipDialogProps) {
             )}
           </Button>
           <p className="text-xs text-gray-500 text-center">
-            A platform fee of 0.001 SOL + 3% will be charged
+            A platform fee of 0.01 SOL + 3% will be charged
+
+
           </p>
         </div>
       </DialogContent>
